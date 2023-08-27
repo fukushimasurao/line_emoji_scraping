@@ -25,28 +25,26 @@
                 @csrf
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
-                    @if ($errors->has('target_url'))
-                        <li>{{ $errors->first('target_url') }}</li>
-                    @endif
                     <input type="text" name="target_url" class="outline-none px-4 py-2 w-full"
                         placeholder="URLを入力...">
+                    <span
+                        class="text-gray-600 text-xs">例:https://store.line.me/emojishop/product/6319855a83603436e7d1951d/ja
+                    </span>
+                    <p class="text-sm text-gray-600 mt-1">
+                        ・LINEスタンプには対応しておりません。
+                    </p>
                 </div>
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
-                    @if ($errors->has('img_name'))
-                        <li>{{ $errors->first('img_name') }}</li>
-                    @endif
-                    <input type="text" name="img_name" class="outline-none px-4 py-2 w-full" placeholder="接頭語">
-                    <p class="text-sm text-gray-600">
+                    <input type="text" name="img_name" class="outline-none px-4 py-2 w-full" placeholder="接頭語を入力...">
+                    <span class="text-gray-600 text-xs">例:chiikawa</span>
+                    <p class="text-sm text-gray-600 mt-1">
                         ・半角英数字のみ<br>
-                        ・２０文字以内<br>
                         ・{接頭語}_{画像ファイル名}の形になります
                     </p>
                 </div>
                 <x-primary-button class="w-full justify-center">ダウンロード</x-primary-button>
             </form>
-
-
 
             <p class="bg-gray-100 rounded p-4 mt-4 shadow">
                 アップロード拡張機能
@@ -54,16 +52,8 @@
                     class="text-blue-500 hover:underline">こちら</a>。<br>
                 ChromeでSlackを開き、左上のサーバー名から「その他管理項目」＞「以下をカスタマイズ」の順に進む。これで画面上部に新しい「Bulk Emoji Uploader」が表示される。
             </p>
-
         </div>
     </div>
-
 </body>
 
 </html>
-
-
-接頭語の注意書きに
-・半角英数字のみ
-・{接頭語}_{画像ファイル名}の形になります
-という文言を追加してください。
