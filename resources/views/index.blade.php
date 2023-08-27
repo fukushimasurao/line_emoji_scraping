@@ -20,7 +20,7 @@
 
     <div class="flex items-center justify-center h-full">
         <div class="bg-white p-8 rounded-lg shadow-md w-3/4 md:w-2/3 lg:w-1/2">
-            <h1 class="text-2xl mb-4">Download Helper</h1>
+            <h1 class="text-2xl mb-4">LINE Emoji Download Helper</h1>
             <form action="{{ route('download') }}" method="POST" class="space-y-4">
                 @csrf
                 <div class="border rounded overflow-hidden p-2 space-y-2">
