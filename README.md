@@ -3,9 +3,9 @@
 ## dockerを利用した環境構築手順
 
 ```bash
-git clone https://github.com/fukushimasurao/line_emoji_scraping.git
+$ git clone https://github.com/fukushimasurao/line_emoji_scraping.git
 
-cd line_emoji_scraping
+$ cd line_emoji_scraping
 
 # docker必須
 $ sail up -d
