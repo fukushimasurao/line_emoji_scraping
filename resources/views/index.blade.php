@@ -25,14 +25,21 @@
                 @csrf
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
+                    @if ($errors->has('target_url'))
+                        <li>{{ $errors->first('target_url') }}</li>
+                    @endif
                     <input type="text" name="target_url" class="outline-none px-4 py-2 w-full"
                         placeholder="URLを入力...">
                 </div>
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
+                    @if ($errors->has('img_name'))
+                        <li>{{ $errors->first('img_name') }}</li>
+                    @endif
                     <input type="text" name="img_name" class="outline-none px-4 py-2 w-full" placeholder="接頭語">
                     <p class="text-sm text-gray-600">
                         ・半角英数字のみ<br>
+                        ・２０文字以内<br>
                         ・{接頭語}_{画像ファイル名}の形になります
                     </p>
                 </div>

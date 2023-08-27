@@ -23,7 +23,7 @@ class DownloadUrlRequest extends FormRequest
     {
         return [
             'target_url' => 'required|active_url',
-            'img_name' => 'string|max:20|nullable',
+            'img_name' => 'required|alpha_num:ascii|max:20',
         ];
     }
 }
