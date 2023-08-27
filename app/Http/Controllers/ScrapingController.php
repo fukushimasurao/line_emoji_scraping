@@ -19,7 +19,8 @@ class ScrapingController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * URLから対象の画像を取得して、zip化する。
+     * もうちょっと行数増えたらfatになるので処理を切り分けたい。
      */
     public function download(DownloadUrlRequest $request)
     {
@@ -50,7 +51,6 @@ class ScrapingController extends Controller
 
         $zip->close();
         return response()->download($zipFileName)->deleteFileAfterSend(true);
-
     }
 
     /**
