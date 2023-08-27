@@ -10,3 +10,5 @@ cd line_emoji_scraping
 # docker必須
 $ sail up -d
 ```
+
+<http://localhost/> で利用。
