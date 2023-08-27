@@ -22,7 +22,7 @@ class DownloadUrlRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'target_url' => 'required|active_url',
+            'target_url' => 'required|active_url|regex:/^https:\/\/store\.line\.me\/emojishop\/product\/.+$/',
             'img_name' => 'required|alpha_num:ascii|max:20',
         ];
     }
@@ -32,6 +32,7 @@ class DownloadUrlRequest extends FormRequest
         return [
             'target_url.required' => 'URLは必須です',
             'target_url.active_url' => 'URLを確認してください',
+            'target_url.regex' => 'URLを確認してください。LINE絵文字だけダウンロード可能です。スタンプはできません。',
             'img_name.required' => '接頭語は必須です',
             'img_name.alpha_num' => '接頭語は半角英数字のみです',
             'img_name.max' => '接頭語は最大２０文字です',

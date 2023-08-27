@@ -25,17 +25,26 @@
                 @csrf
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
+                    @if ($errors->has('target_url'))
+                        <div class="text-red-500 text-xs">
+                            ▶ {{ $errors->first('target_url') }}
+                        </div>
+                    @endif
                     <input type="text" name="target_url" class="outline-none px-4 py-2 w-full"
                         placeholder="URLを入力...">
                     <span
-                        class="text-gray-600 text-xs">例:https://store.line.me/emojishop/product/6319855a83603436e7d1951d/ja
-                    </span>
+                        class="text-gray-600 text-xs">例:https://store.line.me/emojishop/product/6319855a83603436e7d1951d/ja</span>
                     <p class="text-sm text-gray-600 mt-1">
                         ・LINEスタンプには対応しておりません。
                     </p>
                 </div>
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
+                    @if ($errors->has('img_name'))
+                        <div class="text-red-500 text-xs">
+                            ▶ {{ $errors->first('img_name') }}
+                        </div>
+                    @endif
                     <input type="text" name="img_name" class="outline-none px-4 py-2 w-full" placeholder="接頭語を入力...">
                     <span class="text-gray-600 text-xs">例:chiikawa</span>
                     <p class="text-sm text-gray-600 mt-1">
@@ -45,6 +54,7 @@
                 </div>
                 <x-primary-button class="w-full justify-center">ダウンロード</x-primary-button>
             </form>
+
 
             <p class="bg-gray-100 rounded p-4 mt-4 shadow">
                 アップロード拡張機能
