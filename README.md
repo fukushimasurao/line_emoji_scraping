@@ -9,6 +9,9 @@ $ cd line_emoji_scraping
 
 # docker必須
 $ sail up -d
+
+# build
+$ sail npm run dev
 ```
 
 <http://localhost/> で利用。
