@@ -11,6 +11,9 @@ use Symfony\Component\DomCrawler\Crawler;
 class ScrapingController extends Controller
 {
     public const ZIP_FILE_NAME = 'images.zip';
+
+
+
     protected $crawlerFactory;
 
     public function __construct(CrawlerFactory $crawlerFactory)
@@ -38,9 +41,9 @@ class ScrapingController extends Controller
         $target_url = $target['target_url'];
         $prefix = $target['target_prefix'];
 
-        $crawler = $this->scrapeLineUrls($target_url, $client);
+        $fetch_url = $this->fetchHtml($target_url, $client);
 
-        $uniqueImages = $this->fetchImageUrls($crawler);
+        $uniqueImages = $this->fetchImageUrls($fetch_url);
         $zipFileName = $this->createZipFile($zip, $uniqueImages, $prefix, $client);
         return response()->download($zipFileName)->deleteFileAfterSend(true);
     }
@@ -51,7 +54,7 @@ class ScrapingController extends Controller
      * @param \GuzzleHttp\Client $client
      * @return Crawler
      */
-    private function scrapeLineUrls($target, $client)
+    private function fetchHtml($target, $client)
     {
         $response = $client->request('GET', $target);
         return $this->crawlerFactory->createFromContent($response->getBody()->getContents());
@@ -59,12 +62,27 @@ class ScrapingController extends Controller
 
     /**
      * 対象のURL先の画像URLを取得する。
-     * @param Crawler $crawler
+     * @param Crawler $fetch_url
      * @return array
      */
-    private function fetchImageUrls($crawler): array
+    private function fetchImageUrls($fetch_url): array
     {
-        $images = $crawler->filter('.mdCMN09Image')->each(function (Crawler $node) {
+        $images = $fetch_url->filter('.FnStickerPreviewItem')->each(function (Crawler $node) {
+            $data_preview = $node->attr('data-preview');
+            if (preg_match('/"https?:\/\/[^"]*_animation\.png[^"]*"/', $data_preview, $matches)) {
+                return trim($matches[0], '"') ?? null;
+            }
+
+            $style = $node->attr('style');
+            preg_match('/background-image:url\((.*?)\);/', $style, $matches);
+            return $matches[1] ?? null;
+        });
+        return  array_unique($images);
+    }
+
+    private function fetchImageUrls2($fetch_url): array
+    {
+        $images = $fetch_url->filter('.mdCMN09Image')->each(function (Crawler $node) {
             $style = $node->attr('style');
             preg_match('/background-image:url\((.*?)\);/', $style, $matches);
             return $matches[1] ?? null;
