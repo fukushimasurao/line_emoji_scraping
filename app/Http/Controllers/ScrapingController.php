@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\CrawlerFactory;
 use App\Models\Article;
 use App\Http\Requests\DownloadUrlRequest;
 use Illuminate\Http\Request;
-use ZipArchive;
 use Symfony\Component\DomCrawler\Crawler;
 
 class ScrapingController extends Controller
 {
+    protected $crawlerFactory;
+
+    public function __construct(CrawlerFactory $crawlerFactory)
+    {
+        $this->crawlerFactory = $crawlerFactory;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -22,25 +28,21 @@ class ScrapingController extends Controller
      * URLから対象の画像を取得して、zip化する。
      * もうちょっと行数増えたらfatになるので処理を切り分けたい。
      */
-    public function download(DownloadUrlRequest $request)
+    public function download(DownloadUrlRequest $request, \GuzzleHttp\Client $client, \ZipArchive $zip)
     {
         $target = $request->validated();
-        $client = new \GuzzleHttp\Client();
         $response = $client->request('GET', $target['target_url']);
-        $crawler = new Crawler($response->getBody()->getContents());
+        $crawler = $this->crawlerFactory->createFromContent($response->getBody()->getContents());
 
         $images = $crawler->filter('.mdCMN09Image')->each(function (Crawler $node) {
             $style = $node->attr('style');
             preg_match('/background-image:url\((.*?)\);/', $style, $matches);
             return $matches[1] ?? null;
         });
-
         $uniqueImages = array_unique($images);
 
         $zipFileName = 'images.zip';
-        $zip = new ZipArchive();
-
-        $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->open($zipFileName, $zip::CREATE | $zip::OVERWRITE);
 
         foreach ($uniqueImages as $uniqueImage) {
             $imageContent = $client->get($uniqueImage)->getBody()->getContents();
