@@ -40,12 +40,12 @@
                 </div>
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
-                    @if ($errors->has('img_name'))
+                    @if ($errors->has('target_prefix'))
                         <div class="text-red-500 text-xs">
-                            ▶ {{ $errors->first('img_name') }}
+                            ▶ {{ $errors->first('target_prefix') }}
                         </div>
                     @endif
-                    <input type="text" name="img_name" class="outline-none px-4 py-2 w-full" placeholder="接頭語を入力...">
+                    <input type="text" name="target_prefix" class="outline-none px-4 py-2 w-full" placeholder="接頭語を入力...">
                     <span class="text-gray-600 text-xs">例:chiikawa</span>
                     <p class="text-sm text-gray-600 mt-1">
                         ・半角英数字のみ<br>
