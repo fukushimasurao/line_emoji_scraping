@@ -10,6 +10,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ScrapingController extends Controller
 {
+    public const ZIP_FILE_NAME = 'images.zip';
     protected $crawlerFactory;
 
     public function __construct(CrawlerFactory $crawlerFactory)
@@ -25,34 +26,76 @@ class ScrapingController extends Controller
     }
 
     /**
-     * URLから対象の画像を取得して、zip化する。
-     * もうちょっと行数増えたらfatになるので処理を切り分けたい。
-     */
+     * URLから対象の画像を取得して、zip化してダウンロードする。
+     * @param DownloadUrlRequest $request
+     * @param \GuzzleHttp\Client $client
+     * @param \ZipArchive $zip
+     * @return \Illuminate\Http\Response|\Illuminate\Contracts\Routing\ResponseFactory
+    */
     public function download(DownloadUrlRequest $request, \GuzzleHttp\Client $client, \ZipArchive $zip)
     {
         $target = $request->validated();
-        $response = $client->request('GET', $target['target_url']);
-        $crawler = $this->crawlerFactory->createFromContent($response->getBody()->getContents());
+        $target_url = $target['target_url'];
+        $prefix = $target['target_prefix'];
 
+        $crawler = $this->scrapeLineUrls($target_url, $client);
+
+        $uniqueImages = $this->fetchImageUrls($crawler);
+        $zipFileName = $this->createZipFile($zip, $uniqueImages, $prefix, $client);
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * 対象のURL先のHTML等情報を取得する。
+     * @param array $target
+     * @param \GuzzleHttp\Client $client
+     * @return Crawler
+     */
+    private function scrapeLineUrls($target, $client)
+    {
+        $response = $client->request('GET', $target);
+        return $this->crawlerFactory->createFromContent($response->getBody()->getContents());
+    }
+
+    /**
+     * 対象のURL先の画像URLを取得する。
+     * @param Crawler $crawler
+     * @return array
+     */
+    private function fetchImageUrls($crawler): array
+    {
         $images = $crawler->filter('.mdCMN09Image')->each(function (Crawler $node) {
             $style = $node->attr('style');
             preg_match('/background-image:url\((.*?)\);/', $style, $matches);
             return $matches[1] ?? null;
         });
-        $uniqueImages = array_unique($images);
+        return  array_unique($images);
+    }
 
-        $zipFileName = 'images.zip';
+    /**
+     * 対象の画像をzip化する。
+     *
+     * @param \ZipArchive $zip
+     * @param array $uniqueImages
+     * @param array $target
+     * @param \GuzzleHttp\Client $client
+     * @return void
+     */
+    private function createZipFile(\ZipArchive $zip, $uniqueImages, $prefix, $client)
+    {
+        $zipFileName = self::ZIP_FILE_NAME;
+
         $zip->open($zipFileName, $zip::CREATE | $zip::OVERWRITE);
 
         foreach ($uniqueImages as $uniqueImage) {
             $imageContent = $client->get($uniqueImage)->getBody()->getContents();
             $path = parse_url($uniqueImage, PHP_URL_PATH);
-            $imageName = $target['img_name'] . pathinfo($path, PATHINFO_BASENAME);
+            $imageName = $prefix . pathinfo($path, PATHINFO_BASENAME);
             $zip->addFromString($imageName, $imageContent);
         }
 
         $zip->close();
-        return response()->download($zipFileName)->deleteFileAfterSend(true);
+        return $zipFileName;
     }
 
     /**
