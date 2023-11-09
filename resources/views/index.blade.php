@@ -45,7 +45,8 @@
                             ▶ {{ $errors->first('target_prefix') }}
                         </div>
                     @endif
-                    <input type="text" name="target_prefix" class="outline-none px-4 py-2 w-full" placeholder="接頭語を入力...">
+                    <input type="text" name="target_prefix" class="outline-none px-4 py-2 w-full"
+                        placeholder="接頭語を入力...">
                     <span class="text-gray-600 text-xs">例:chiikawa</span>
                     <p class="text-sm text-gray-600 mt-1">
                         ・半角英数字のみ<br>

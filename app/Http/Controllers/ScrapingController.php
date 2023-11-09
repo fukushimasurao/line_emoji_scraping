@@ -10,10 +10,6 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ScrapingController extends Controller
 {
-    public const ZIP_FILE_NAME = 'images.zip';
-
-
-
     protected $crawlerFactory;
 
     public function __construct(CrawlerFactory $crawlerFactory)
@@ -73,19 +69,11 @@ class ScrapingController extends Controller
                 return trim($matches[0], '"') ?? null;
             }
 
-            $style = $node->attr('style');
-            preg_match('/background-image:url\((.*?)\);/', $style, $matches);
-            return $matches[1] ?? null;
-        });
-        return  array_unique($images);
-    }
-
-    private function fetchImageUrls2($fetch_url): array
-    {
-        $images = $fetch_url->filter('.mdCMN09Image')->each(function (Crawler $node) {
-            $style = $node->attr('style');
-            preg_match('/background-image:url\((.*?)\);/', $style, $matches);
-            return $matches[1] ?? null;
+            $style = $node->filter('span.mdCMN09Image')->attr('style');
+            if (preg_match('/url\((.*?)\)/', $style, $matches)) {
+                // URLが見つかった場合は、それを返す
+                return trim($matches[1], '"') ?? null;
+            }
         });
         return  array_unique($images);
     }
@@ -101,7 +89,7 @@ class ScrapingController extends Controller
      */
     private function createZipFile(\ZipArchive $zip, $uniqueImages, $prefix, $client)
     {
-        $zipFileName = self::ZIP_FILE_NAME;
+        $zipFileName = self::getZipFileName();
 
         $zip->open($zipFileName, $zip::CREATE | $zip::OVERWRITE);
 
@@ -116,6 +104,15 @@ class ScrapingController extends Controller
         return $zipFileName;
     }
 
+    /**
+     * ZIPファイル名を取得(現在の日付と時間)
+     *
+     * @return string
+     */
+    private static function getZipFileName(): string
+    {
+        return 'images_' . now()->format('Ymd_His') . '.zip';
+    }
     /**
      * Store a newly created resource in storage.
      */
