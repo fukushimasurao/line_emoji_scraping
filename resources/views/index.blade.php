@@ -50,7 +50,7 @@
                     <span class="text-gray-600 text-xs">例:chiikawa</span>
                     <p class="text-sm text-gray-600 mt-1">
                         ・半角英数字のみ<br>
-                        ・{接頭語}_{画像ファイル名}の形になります
+                        ・画像ファイル名が {接頭語}_{数字} の形になります
                     </p>
                 </div>
                 <x-primary-button class="w-full justify-center">ダウンロード</x-primary-button>

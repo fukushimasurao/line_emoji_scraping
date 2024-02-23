@@ -48,7 +48,7 @@ class ScrapingController extends Controller
      * 対象のURL先のHTML等情報を取得する。
      * @param array $target
      * @param \GuzzleHttp\Client $client
-     * @return Crawler
+     * @return Crawlerssss
      */
     private function fetchHtml($target, $client)
     {
@@ -96,7 +96,7 @@ class ScrapingController extends Controller
         foreach ($uniqueImages as $uniqueImage) {
             $imageContent = $client->get($uniqueImage)->getBody()->getContents();
             $path = parse_url($uniqueImage, PHP_URL_PATH);
-            $imageName = $prefix . pathinfo($path, PATHINFO_BASENAME);
+            $imageName = $prefix . '_' . pathinfo($path, PATHINFO_BASENAME);
             $zip->addFromString($imageName, $imageContent);
         }
 
