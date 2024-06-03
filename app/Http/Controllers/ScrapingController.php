@@ -37,9 +37,9 @@ class ScrapingController extends Controller
         $target_url = $target['target_url'];
         $prefix = $target['target_prefix'];
 
-        $fetch_url = $this->fetchHtml($target_url, $client);
+        $bodyContents = $this->fetchBodyContents($target_url, $client);
 
-        $uniqueImages = $this->fetchImageUrls($fetch_url);
+        $uniqueImages = $this->fetchImageUrls($bodyContents);
         $zipFileName = $this->createZipFile($zip, $uniqueImages, $prefix, $client);
         return response()->download($zipFileName)->deleteFileAfterSend(true);
     }
@@ -50,7 +50,7 @@ class ScrapingController extends Controller
      * @param \GuzzleHttp\Client $client
      * @return Crawlerssss
      */
-    private function fetchHtml($target, $client)
+    private function fetchBodyContents($target, $client)
     {
         $response = $client->request('GET', $target);
         return $this->crawlerFactory->createFromContent($response->getBody()->getContents());
@@ -69,13 +69,13 @@ class ScrapingController extends Controller
                 return trim($matches[0], '"') ?? null;
             }
 
-            $style = $node->filter('span.mdCMN09Image')->attr('style');
+            $style = $node->filter('.mdCMN09Image')->attr('style');
             if (preg_match('/url\((.*?)\)/', $style, $matches)) {
                 // URLが見つかった場合は、それを返す
-                return trim($matches[1], '"') ?? null;
+                return trim($matches[1], '"');
             }
         });
-        return  array_unique($images);
+        return array_filter($images);
     }
 
     /**
@@ -93,10 +93,22 @@ class ScrapingController extends Controller
 
         $zip->open($zipFileName, $zip::CREATE | $zip::OVERWRITE);
 
-        foreach ($uniqueImages as $uniqueImage) {
+        foreach ($uniqueImages as $index => $uniqueImage) {
             $imageContent = $client->get($uniqueImage)->getBody()->getContents();
             $path = parse_url($uniqueImage, PHP_URL_PATH);
-            $imageName = $prefix . '_' . pathinfo($path, PATHINFO_BASENAME);
+
+            $baseName = pathinfo($path, PATHINFO_BASENAME);
+
+            // $indexを3桁の整数にする。意味ないけどかっこいいから。
+            $index = sprintf('%03d', $index);
+
+            // スタンプの場合は、stickerが命名されている。
+            if ($baseName === 'sticker.png') {
+                $imageName = $prefix . '_' . $index . '_' . $baseName;
+            } else {
+                $imageName = $prefix . '_' . $baseName;
+            }
+
             $zip->addFromString($imageName, $imageContent);
         }
 

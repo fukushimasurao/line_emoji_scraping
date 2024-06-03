@@ -25,6 +25,7 @@
                 @csrf
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
+                    <h3>対象URL</h3>
                     @if ($errors->has('target_url'))
                         <div class="text-red-500 text-xs">
                             ▶ {{ $errors->first('target_url') }}
@@ -35,11 +36,12 @@
                     <span
                         class="text-gray-600 text-xs">例:https://store.line.me/emojishop/product/6319855a83603436e7d1951d/ja</span>
                     <p class="text-sm text-gray-600 mt-1">
-                        ・LINEスタンプには対応しておりません。
+                        ・動くスタンプは、動かない感じでダウンロードされます
                     </p>
                 </div>
                 <div class="border rounded overflow-hidden p-2 space-y-2">
                     <span class="text-red-500 text-xs">※必須</span>
+                    <h3>ファイルの接頭語</h3>
                     @if ($errors->has('target_prefix'))
                         <div class="text-red-500 text-xs">
                             ▶ {{ $errors->first('target_prefix') }}
@@ -50,7 +52,8 @@
                     <span class="text-gray-600 text-xs">例:chiikawa</span>
                     <p class="text-sm text-gray-600 mt-1">
                         ・半角英数字のみ<br>
-                        ・画像ファイル名が {接頭語}_{数字} の形になります
+                        ・絵文字の場合、画像ファイル名が {接頭語}_{数字} の形になります。（例: chiikawa_001.png 的な感じ）
+                        ・スタンプの場合、画像ファイル名が {接頭語}_{数字} の形になります。（例: chiikawa_001_sticker.png 的な感じ）
                     </p>
                 </div>
                 <x-primary-button class="w-full justify-center">ダウンロード</x-primary-button>
